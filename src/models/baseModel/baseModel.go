@@ -16,7 +16,10 @@ type BaseModel struct {
 	namespace string 
 	hred_ip string 
 }
-
+// const (
+// 	baseUrl string = ""
+// 	herdUrl string = ""
+// )
 
 // func (this *BaseService) init() {
 

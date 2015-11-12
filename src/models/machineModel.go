@@ -1,7 +1,7 @@
 package models
 
 import (
-	bm "./baseModel"
+	bm "models/baseModel"
 	"encoding/json"
 )
 import (

@@ -1,10 +1,10 @@
 package k8sModel
 
 import (
-	bm "../baseModel"
+	bm "models/baseModel"
 	"encoding/json"
 	"libs/request"
-	"./format"
+	"models/k8sModel/format"
 )
 import (
 	// "fmt"

@@ -1,11 +1,11 @@
 package herdModel
 
 import (
-	bm "../baseModel"
+	bm "models/baseModel"
 	// "io/ioutil"
 	"encoding/json"
 	"libs/request"
-	"./format"
+	"models/herdModel/format"
 )
 import (
 	// "fmt"

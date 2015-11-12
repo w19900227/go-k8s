@@ -12,9 +12,9 @@ import (
 )
 
 import (
-	bs "./baseService"
-	"../models/k8sModel"
-	"../models/herdModel"
+	bs "services/baseService"
+	"models/k8sModel"
+	"models/herdModel"
 	// k8s "./k8s"
 	"strconv"
 
