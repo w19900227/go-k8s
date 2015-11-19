@@ -233,6 +233,32 @@ func (this *ServiceService) CreateService(data []byte) Service {
 	return _service
 }
 
+func (this *ServiceService) UpdateService(name string, data []byte) Service {
+	type service_format struct {
+		Service_name string `json:"service_name"`
+		Port string `json:"port"`
+		Label map[string]string `json:"label"`
+		NodePort string `json:"nodePort"`
+	}
+	var _service Service
+
+    var _service_format service_format
+	json.Unmarshal(data, &_service_format)
+
+	service_model := k8sModel.ServiceModel{}
+	_k8s_service := service_model.GetService(name)
+
+	_k8s_service.Metadata.Labels = _service_format.Label
+	_k8s_service.Spec.Ports[0].Port, _ = strconv.Atoi(_service_format.Port)
+	_k8s_service.Spec.Ports[0].TargetPort, _ = strconv.Atoi(_service_format.Port)
+	_k8s_service.Spec.Selector["name"] = _service_format.Service_name
+	
+    service_model.UpdateService(name, _k8s_service)
+	_service.Status = "ok"
+	// _service.Metadata.Label = _service_format.Label
+	return _service
+}
+
 func (this *ServiceService) DeleteService(name string) Service {
 	service_model := k8sModel.ServiceModel{}
 	// _service := service_model.DeleteService(name)

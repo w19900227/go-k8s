@@ -31,8 +31,8 @@ func (this *ServiceModel) GetServiceList() (format.ServiceList) {
 	body := this.req.Get("http://192.168.12.8:8080/api/v1/namespaces/default/services")
 	// body := this.getPagInfo_data()//在伺服器run必須移除此行
 
-    // var data api.ServiceList
-    var data format.ServiceList
+	// var data api.ServiceList
+	var data format.ServiceList
 	json.Unmarshal(body, &data)
 	// fmt.Println(err)
 	// fmt.Println(b)
@@ -42,8 +42,8 @@ func (this *ServiceModel) GetService(name string) (format.Service) {
 	body := this.req.Get("http://192.168.12.8:8080/api/v1/namespaces/default/services/"+name)
 	// body := this.getPagInfo_data()//在伺服器run必須移除此行
 
-    // var data api.ServiceList
-    var data format.Service
+	// var data api.ServiceList
+	var data format.Service
 	json.Unmarshal(body, &data)
 	// fmt.Println(err)
 	// fmt.Println(b)
@@ -53,21 +53,28 @@ func (this *ServiceModel) GetService(name string) (format.Service) {
 func (this *ServiceModel) CreateService(data format.Service) (format.Service) {
 	body := this.req.Post("http://192.168.12.8:8080/api/v1/namespaces/default/services", data)
 	
-    var _service_data format.Service
+	var _service_data format.Service
 	json.Unmarshal(body, &_service_data)
-    
+
 	return _service_data
 }
 
-// func (this *ServiceModel) DeleteService(name string) (format.Service) {
-func (this *ServiceModel) DeleteService(name string) string {
+func (this *ServiceModel) UpdateService(name string, data format.Service) (format.Service) {
+	body := this.req.Put("http://192.168.12.8:8080/api/v1/namespaces/default/services/"+name, data)
+	
+	var _service_data format.Service
+	json.Unmarshal(body, &_service_data)
+
+	return _service_data
+}
+
+func (this *ServiceModel) DeleteService(name string) (format.Service) {
 	body := this.req.Delete("http://192.168.12.8:8080/api/v1/namespaces/default/services/"+name, nil)
-	Test(body)
- //    var _service_data format.Service
-	// json.Unmarshal(body, &_service_data)
-    
-	// return _service_data
-	return "ssss"
+	
+	var _service_data format.Service
+	json.Unmarshal(body, &_service_data)
+	
+	return _service_data
 }
 
 func Test(result interface{}) {

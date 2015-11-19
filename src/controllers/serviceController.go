@@ -57,7 +57,15 @@ func (this *ServiceController) Put(request *restful.Request, response *restful.R
 	fmt.Println("[Put] Editor Service")
     service_name := request.PathParameter("name")
 	
-    fmt.Print(service_name)
+    var list_service k8sService.ServiceService
+
+    body, err := ioutil.ReadAll(request.Request.Body)
+    
+    if err != nil {
+        response.WriteEntity("fail")
+        return 
+    }
+    response.WriteEntity(list_service.UpdateService(service_name, body))
     // response.WriteEntity(r)
     return
 }
