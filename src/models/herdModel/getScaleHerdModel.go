@@ -23,18 +23,19 @@ func (this *GetScaleHerdModel) Test() string {
 	return "k8s test"
 }
 // curl -H "Content-Type: application/json" -X POST -d '{"clusters":["app","dev","redis-master","redis-slave","web-app"]}' http://192.168.12.7:8090/getscale
-func (this *GetScaleHerdModel) GetPagInfo() (format.HerdList) {
+func (this *GetScaleHerdModel) GetPagInfo(d format.Data) (format.HerdGetscale) {
 	// url := this.GetBaseUrl("services")
 
+	body := this.req.Post("http://192.168.12.7:8090/getscale", d)
 	// body := this.GetRequest(url)
-	body := this.getPagInfo_data()//在伺服器run必須移除此行
+	// body := this.getPagInfo_data()//在伺服器run必須移除此行
 
-    var data format.HerdList
+    var data format.HerdGetscale
 	json.Unmarshal(body, &data)
 	return data
 }
  
-func (this *GetScaleHerdModel) PostData() (format.HerdList) {
+func (this *GetScaleHerdModel) PostData() (format.HerdGetscale) {
 	// fmt.Println(this.data)
 	// body := this.JsonRequest("get", this.data)
 	// fmt.Println(string(body))
@@ -50,7 +51,7 @@ func (this *GetScaleHerdModel) PostData() (format.HerdList) {
     // }
     
     
-    var data format.HerdList
+    var data format.HerdGetscale
 	json.Unmarshal(body, &data)
 	return data
 	// fmt.Println(data)

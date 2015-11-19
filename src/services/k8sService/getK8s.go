@@ -1,4 +1,4 @@
-package services
+package k8sService
 
 import (
 // // 	"net/http"

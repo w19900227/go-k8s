@@ -7,7 +7,7 @@ type Data struct {
 	Containers []string `json:"containers"`
 }
 
-type HerdList struct {
+type HerdGet struct {
 	Services []service `json:"services"`
 	Clusters []cluster `json:"clusters"`
 	Containers []container `json:"containers"`
@@ -37,5 +37,13 @@ type cluster struct {
 	Pod_max int `json:"pod_max"`
 }
 
-type container struct {}
+type container struct {
+	Container_name string `json:"container_name"`
+	Cpu int `json:"cpu"`
+	Mem int `json:"mem"`
+}
+
+type HerdGetscale struct {
+	clusters []string `json:"clusters"`
+}
 

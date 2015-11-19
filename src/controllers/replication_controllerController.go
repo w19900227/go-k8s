@@ -2,6 +2,7 @@ package controllers
 
 import (
     "github.com/emicklei/go-restful"
+    "services/k8sService"
 )
 import (
 	"fmt"
@@ -22,7 +23,10 @@ func (this *ReplicationControllerController) Get(request *restful.Request, respo
 
 func (this *ReplicationControllerController) GetList(request *restful.Request, response *restful.Response) {
 	fmt.Println("[GetList] ReplicationController List")
-    // response.WriteEntity(r)
+    var list_service k8sService.ReplicationControllerService
+    // fmt.Println(list_service.Service())
+
+    response.WriteEntity(list_service.ReplicationController())
     return
 }
 

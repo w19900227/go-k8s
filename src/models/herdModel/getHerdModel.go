@@ -24,23 +24,25 @@ func (this *GetHerdModel) Test() string {
 	return "k8s test"
 }
 // curl -H "Content-Type: application/json" -X POST -d '{"services":["frontend"]}' http://192.168.12.7:8090/get
-func (this *GetHerdModel) GetPagInfo() (format.HerdList) {
+func (this *GetHerdModel) GetPagInfo() (format.HerdGet) {
 	// url := this.GetBaseUrl("services")
 
 	// body := this.GetRequest(url)
 	body := this.getPagInfo_data()//在伺服器run必須移除此行
 
-    var data format.HerdList
+    var data format.HerdGet
 	json.Unmarshal(body, &data)
 	return data
 }
  
-func (this *GetHerdModel) PostData() (format.HerdList) {
+func (this *GetHerdModel) PostData(d format.Data) (format.HerdGet) {
 	// fmt.Println(this.data)
 	// body := this.JsonRequest("get", this.data)
 	// fmt.Println(string(body))
-	// body := this.req.Post("http://192.168.15.76:8090/get", this.data)
-	body := this.getPagInfo_data()
+	// fmt.Println(this.Data)
+	// body := this.req.Post("http://192.168.12.7:8090/get", this.Data)
+	body := this.req.Post("http://192.168.12.7:8090/get", d)
+	// body := this.getPagInfo_data()
 	// fmt.Println(string(data))
 
 
@@ -51,7 +53,7 @@ func (this *GetHerdModel) PostData() (format.HerdList) {
     // }
     
     
-    var data format.HerdList
+    var data format.HerdGet
 	json.Unmarshal(body, &data)
 	return data
 	// fmt.Println(data)
