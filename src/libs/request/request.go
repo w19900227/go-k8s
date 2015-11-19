@@ -55,24 +55,32 @@ func (this *Request) Put(url string, data interface{}) []byte {
 
 
 // func (this *Request) Delete(url string, data interface{}) []byte {
-func (this *Request) Delete(url string, data interface{}) string {
+func (this *Request) Delete(url string, data interface{}) []byte {
+    if data != nil {
+        return this.DeleteData(url, data)
+    }
     client := &http.Client{}
 
-    if data != nil {
-        // fmt.Println("!=")
-        buf, _ := json.Marshal(data)
-        body := strings.NewReader(string(buf))
-
-        response, _ := http.NewRequest("DELETE", url, body)
-    } else {
-        // fmt.Println("else")
-        response, _ := http.NewRequest("DELETE", url, nil)
-    }
+    response, _ := http.NewRequest("DELETE", url, nil)
     response.Header.Set("Content-Type", "application/json")
     re, _ := client.Do(response)
     defer re.Body.Close()
     datas, _ := ioutil.ReadAll(re.Body)
     fmt.Println(datas)
-    return "datas"    
+    return datas  
 }
+func (this *Request) DeleteData(url string, data interface{}) []byte {
+    client := &http.Client{}
+
+    buf, _ := json.Marshal(data)
+    body := strings.NewReader(string(buf))
+
+    response, _ := http.NewRequest("DELETE", url, body)
+    response.Header.Set("Content-Type", "application/json")
+    re, _ := client.Do(response)
+    defer re.Body.Close()
+    datas, _ := ioutil.ReadAll(re.Body)
+    return datas    
+}
+
 
