@@ -35,13 +35,13 @@ type PodService struct {
 	// this.hred_ip = "http://192.168.6.14:8090"
 // }
 type status struct {
-	Phase string `json:"phase"`
-	Public_ip string `json:"public_ip"`
-	Host_ip string `json:"host_ip"`
+	Phase string `json:"phase,omitempty"`
+	Public_ip string `json:"public_ip,omitempty"`
+	Host_ip string `json:"host_ip,omitempty"`
 }
 type Container struct {
-	Name string `json:"name"`
-	Image string `json:"image"`
+	Name string `json:"name,omitempty"`
+	Image string `json:"image,omitempty"`
 }
 type Pod struct {
 	Status string `json:"status,omitempty"`
@@ -68,12 +68,18 @@ func (this *PodService) GetTest() string {
 	return "PodService"
 }
 
-func (this *PodService) Pod() PodList {
+func (this *PodService) GetPodList() PodList {
 	_podModel := k8sModel.PodModel{}
-	data := _podModel.Pod()
+	data := _podModel.GetPodList()
 
 	var _pod_list PodList
 	for _, data_items := range data.Items {
+		_metadata_name_arr := strings.Split(data_items.Metadata.Name, "-")
+		_metadata_name := strings.Join(_metadata_name_arr[:len(_metadata_name_arr)-1], "-")
+		if _metadata_name == "kube-dns-v3" {
+			continue
+		}
+
 		data := _podModel.PodByName(data_items.Metadata.Name)
 		_pod := this.pod_by_name(data_items.Metadata.Name, data)
 		_pod_list.Pod = append(_pod_list.Pod, _pod)
@@ -85,7 +91,18 @@ func (this *PodService) PodByName(name string) Pod {
 
 	_podModel := k8sModel.PodModel{}
 	data := _podModel.PodByName(name)
+	// Test(data)
 	_pod := this.pod_by_name(name, data)
+	_pod.Status = "ok"
+	return _pod
+}
+
+func (this *PodService) DeletePod(name string) Pod {
+
+	_podModel := k8sModel.PodModel{}
+	_podModel.DeletePod(name)
+	// _pod := this.pod_by_name(name, data)
+	var _pod Pod
 	_pod.Status = "ok"
 	return _pod
 }

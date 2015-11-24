@@ -66,7 +66,6 @@ func (this *Request) Delete(url string, data interface{}) []byte {
     re, _ := client.Do(response)
     defer re.Body.Close()
     datas, _ := ioutil.ReadAll(re.Body)
-    fmt.Println(datas)
     return datas  
 }
 func (this *Request) DeleteData(url string, data interface{}) []byte {
@@ -81,6 +80,9 @@ func (this *Request) DeleteData(url string, data interface{}) []byte {
     defer re.Body.Close()
     datas, _ := ioutil.ReadAll(re.Body)
     return datas    
+}
+func tt() {
+    fmt.Println("req test")
 }
 
 

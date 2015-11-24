@@ -19,15 +19,13 @@ func (this *PodController) Get(request *restful.Request, response *restful.Respo
 	
     var _pod_service k8sService.PodService
     response.WriteEntity(_pod_service.PodByName(pod_name))
-    // response.WriteEntity(r)
     return
 }
 
 func (this *PodController) GetList(request *restful.Request, response *restful.Response) {
 	fmt.Println("[GetList] Pod List")
     var _pod_service k8sService.PodService
-    response.WriteEntity(_pod_service.Pod())
-    // response.WriteEntity(r)
+    response.WriteEntity(_pod_service.GetPodList())
     return
 }
 
@@ -41,7 +39,6 @@ func (this *PodController) Put(request *restful.Request, response *restful.Respo
 	fmt.Println("[Put] Editor Pod")
     pod_name := request.PathParameter("name")
 	
-    fmt.Print(pod_name)
     // response.WriteEntity(r)
     return
 }
@@ -49,8 +46,8 @@ func (this *PodController) Put(request *restful.Request, response *restful.Respo
 func (this *PodController) Delete(request *restful.Request, response *restful.Response) {
     fmt.Println("[Delete] Delete Pod")
     pod_name := request.PathParameter("name")
-	
-    fmt.Print(pod_name)
-    // response.WriteEntity(r)
+    var _pod_service k8sService.PodService
+
+    response.WriteEntity(_pod_service.DeletePod(pod_name))
     return
 }

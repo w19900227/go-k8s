@@ -3,11 +3,11 @@ package controllers
 import (
     "github.com/emicklei/go-restful"
     "services/k8sService"
+    "io/ioutil"
 )
 import (
 	"fmt"
     "encoding/json"
-    "io/ioutil"
 
 )
 
@@ -20,20 +20,16 @@ func (this *ServiceController) Get(request *restful.Request, response *restful.R
     service_name := request.PathParameter("name")
     
     var list_service k8sService.ServiceService
-    // fmt.Println(list_service.Service())
 
     response.WriteEntity(list_service.ServiceByName(service_name))
-    // response.WriteEntity(r)
     return
 }
 
 func (this *ServiceController) GetList(request *restful.Request, response *restful.Response) {
 	fmt.Println("[GetList] Service List")
 	var list_service k8sService.ServiceService
-	// fmt.Println(list_service.Service())
 
     response.WriteEntity(list_service.Service())
-    // response.WriteEntity(r)
     return
 }
 
@@ -49,7 +45,6 @@ func (this *ServiceController) Post(request *restful.Request, response *restful.
     }
 
     response.WriteEntity(list_service.CreateService(body))
-    // response.WriteEntity(r)
     return
 }
 
@@ -66,7 +61,6 @@ func (this *ServiceController) Put(request *restful.Request, response *restful.R
         return 
     }
     response.WriteEntity(list_service.UpdateService(service_name, body))
-    // response.WriteEntity(r)
     return
 }
 

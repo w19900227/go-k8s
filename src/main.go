@@ -27,7 +27,7 @@ func main() {
 	// fmt.Println(data)
 	
 	
-    // restful.Add(UserRouter())
+    restful.Add(IndexRouter())
     restful.Add(ServiceRouter())
     restful.Add(ReplicationControllerRouter())
     restful.Add(PodRouter())
@@ -39,6 +39,27 @@ func main() {
 }
 
 
+func IndexRouter() *restful.WebService {
+    router := new(restful.WebService)
+    router.
+        Path("/").
+        Consumes(restful.MIME_JSON, restful.MIME_JSON).
+        Produces(restful.MIME_JSON, restful.MIME_JSON)
+
+    // listService := controllers.ServiceController{}
+    var overview controllers.OverviewController
+
+    router.Route(router.GET("/overview").To(overview.Get))
+
+    var line controllers.LineController
+
+    router.Route(router.POST("/line").To(line.Post))
+    router.Route(router.DELETE("/line").To(line.Delete))
+ 
+    return router
+}
+
+
 func ServiceRouter() *restful.WebService {
     router := new(restful.WebService)
     router.
@@ -46,8 +67,8 @@ func ServiceRouter() *restful.WebService {
         Consumes(restful.MIME_JSON, restful.MIME_JSON).
         Produces(restful.MIME_JSON, restful.MIME_JSON)
 
-	// listService := controllers.ServiceController{}
-	var listService controllers.ServiceController
+    // listService := controllers.ServiceController{}
+    var listService controllers.ServiceController
 
     router.Route(router.GET("/{name}").To(listService.Get))
     router.Route(router.GET("/").To(listService.GetList))

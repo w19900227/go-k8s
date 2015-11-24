@@ -7,7 +7,7 @@ type Container struct {
 	// Command map[string]string `json:"command"` //string array
 	// Args map[string]string `json:"args"` //string array
 	// WorkingDir string `json:"workingDir"`
-	// Ports []ContainerPort `json:"ports"`
+	Ports []ContainerPort `json:"ports"`
 	// Env []EnvVar `json:"env"`
 	// Resources ResourceRequirements `json:"resources"`
 	// VolumeMounts []VolumeMount `json:"volumeMounts"`

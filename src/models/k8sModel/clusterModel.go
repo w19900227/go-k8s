@@ -29,7 +29,7 @@ type ReplicationControllerModel struct {
 // }
 
 // curl -H "Content-Type: application/json" -X GET  http://192.168.12.8:8080/api/v1/namespaces/ReplicationController/replicationcontrollers
-func (this *ReplicationControllerModel) ReplicationController() (format.ReplicationControllerList) {
+func (this *ReplicationControllerModel) GetReplicationControllerList() (format.ReplicationControllerList) {
 	body := this.req.Get("http://192.168.12.8:8080/api/v1/namespaces/default/replicationcontrollers")
 
     var data format.ReplicationControllerList
@@ -37,6 +37,43 @@ func (this *ReplicationControllerModel) ReplicationController() (format.Replicat
 	// fmt.Println(err)
 	// fmt.Println(b)
 	return data
+}
+
+func (this *ReplicationControllerModel) GetReplicationController(name string) (format.ReplicationController) {
+	body := this.req.Get("http://192.168.12.8:8080/api/v1/namespaces/default/replicationcontrollers/"+name)
+
+    var data format.ReplicationController
+	json.Unmarshal(body, &data)
+	// fmt.Println(err)
+	// fmt.Println(b)
+	return data
+}
+
+func (this *ReplicationControllerModel) CreateReplicationController(data format.ReplicationController) (format.ReplicationController) {
+	body := this.req.Post("http://192.168.12.8:8080/api/v1/namespaces/default/replicationcontrollers", data)
+	
+	var _replication_controller_data format.ReplicationController
+	json.Unmarshal(body, &_replication_controller_data)
+
+	return _replication_controller_data
+}
+
+func (this *ReplicationControllerModel) UpdateReplicationController(name string, data format.ReplicationController) (format.ReplicationController) {
+	body := this.req.Put("http://192.168.12.8:8080/api/v1/namespaces/default/replicationcontrollers/"+name, data)
+	
+	var _replication_controller_data format.ReplicationController
+	json.Unmarshal(body, &_replication_controller_data)
+
+	return _replication_controller_data
+}
+
+func (this *ReplicationControllerModel) DeleteReplicationController(name string) (format.ReplicationController) {
+	body := this.req.Delete("http://192.168.12.8:8080/api/v1/namespaces/default/replicationcontrollers/"+name, nil)
+	
+	var _replication_controller_data format.ReplicationController
+	json.Unmarshal(body, &_replication_controller_data)
+	
+	return _replication_controller_data
 }
 
 func (this *ReplicationControllerModel) getPagInfo_data() []byte {
