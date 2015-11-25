@@ -39,7 +39,7 @@ func (this *PodController) Put(request *restful.Request, response *restful.Respo
 	fmt.Println("[Put] Editor Pod")
     pod_name := request.PathParameter("name")
 	
-    // response.WriteEntity(r)
+    response.WriteEntity(pod_name)
     return
 }
 

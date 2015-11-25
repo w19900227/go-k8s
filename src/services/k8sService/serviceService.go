@@ -63,8 +63,8 @@ type Service struct {
 	Label map[string]string `json:"label,omitempty"`
 	Ports []sub_Ports `json:"ports,omitempty"`
 	MachineStatus string `json:"machine_status,omitempty"`
-	Cpu int `json:"cpu,omitempty"`
-	Memory int `json:"memory,omitempty"`
+	Cpu int `json:"cpu"`
+	Memory int `json:"memory"`
 	Service_name string `json:"service_name,omitempty"`
 }	
 type ServiceList struct {
@@ -302,7 +302,7 @@ func (this *ServiceService) service_by_name(name string, data k8s_format.Service
 				if len(_cluster.Containers) > 0 {
 					for _, _container := range _cluster.Containers {
 						cpuAndMem.cpu = append(cpuAndMem.cpu, _container.Cpu)
-						cpuAndMem.mem = append(cpuAndMem.cpu, _container.Mem)
+						cpuAndMem.mem = append(cpuAndMem.mem, _container.Mem)
 					}
 				}
 			}

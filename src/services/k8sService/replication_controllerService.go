@@ -8,12 +8,13 @@ import (
 	// "fmt"
 	bs "services/baseService"
 	"models/k8sModel"
-	// "models/herdModel"
+	"models/herdModel"
+	herd_format "models/herdModel/format"
 	k8s_format "models/k8sModel/format"
 	"strconv"
 	"encoding/json"
+	"strings"
 
-	// herd_format "models/herdModel/format"
 	// "../models"
 	// k8s "./k8s"
 )
@@ -30,36 +31,43 @@ type ReplicationControllerService struct {
 	// this.namespace = "/namespaces/default/"
 	// this.hred_ip = "http://192.168.6.14:8090"
 // }
-type container_infos struct {
-	container_id string `json:"container_id,omitempty"`
-	image_file [] struct {
-		image string  `json:"image,omitempty"`
-		name string `json:"name,omitempty"`
-	} `json:"image_file,omitempty"`
-	label map[string]string `json:"label,omitempty"`
-	public_ip string `json:"public_ip,omitempty"`
-	status string `json:"status,omitempty"`
+type image_file struct {
+	Name string `json:"name,omitempty"`
+	Image string  `json:"image,omitempty"`
+}
+type pod struct {
+	Container_name string `json:"container_name,omitempty"`
+	Image_file []image_file `json:"image_file,omitempty"`
+	Label map[string]string `json:"label,omitempty"`
+	Public_ip string `json:"public_ip,omitempty"`
+	Host_ip string `json:"host_ip,omitempty"`
+	Mem int `json:"mem"`
+	Cpu int `json:"cpu"`
+	Status string `json:"status,omitempty"`
+}
+
+type cluster_format struct {
+	Auto_scale int `json:"auto_scale"`
+	Pods []pod `json:"container_info,omitempty"`
+	Status string `json:"status,omitempty"`
+
+	Cluster_name string `json:"cluster_name,omitempty"`
+	Port int `json:"port,omitempty"`
+	Container_count int `json:"container_count"`
+	Image string `json:"image,omitempty"`
+	Mem int `json:"mem"`
+	Cpu int `json:"cpu"`
+	Selector map[string]string `json:"selector,omitempty"`
+	Label map[string]string `json:"label,omitempty"`
 }
 
 type Cluster struct {
 	Status string `json:"status,omitempty"`
 	Errno string `json:"errno,omitempty"`
 	Errmsg string `json:"errmsg,omitempty"`
-	// Data Cluster `json:"data,omitempty"`
+	Data cluster_format `json:"data,omitempty"`
 
 
-	Auto_scale int `json:"auto_scale,omitempty"`
-	Container_info []container_infos `json:"container_info,omitempty"`
-	MachineStatus string `json:"machine_status,omitempty"`
-
-	Cluster_name string `json:"cluster_name,omitempty"`
-	Port int `json:"port,omitempty"`
-	Container_count int `json:"container_count,omitempty"`
-	Image string `json:"image,omitempty"`
-	Mem int `json:"mem,omitempty"`
-	Cpu int `json:"cpu,omitempty"`
-	Selector map[string]string `json:"selector,omitempty"`
-	Label map[string]string `json:"label,omitempty"`
 
 }
 	
@@ -67,7 +75,7 @@ type ClusterList struct {
 	Status string `json:"status,omitempty"`
 	Errno string `json:"errno,omitempty"`
 	Errmsg string `json:"errmsg,omitempty"`
-	Data []Cluster `json:"data,omitempty"`
+	Data []cluster_format `json:"data,omitempty"`
 }
 
 
@@ -80,57 +88,106 @@ func (this *ReplicationControllerService) GetReplicationControllerList() Cluster
 	_replication_controllerModel := k8sModel.ReplicationControllerModel{}
     data := _replication_controllerModel.GetReplicationControllerList()
 
+	_podModel := k8sModel.PodModel{}
+    _pod_data := _podModel.GetPodList()
+
 	var _cluster_list ClusterList
 
     for _, data_items := range data.Items {
-		var _cluster Cluster
 		metadata_name := data_items.Metadata.Name
-
     	if metadata_name == "kube-dns-v3" {
     		continue
     	}
 
-		_cluster.Label = data_items.Metadata.Labels
+		var _cluster cluster_format
+		_cluster = this.rc_by_name(data_items)
 
-
-		// for _, value := range data_items.Spec.Template.Spec.Containers {
-			// _cluster.Images = value.Image
-		// }
 		replicas := strconv.Itoa(data_items.Status.Replicas)
 		_cluster.Status = replicas + "/" + replicas
 
+		var herd_service herd_format.Data
+		herd_service.Clusters = append(herd_service.Clusters, metadata_name)
 
+		var scale_herd herdModel.ScaleHerdModel
+		scale_herd_data := scale_herd.GetScale(herd_service)
 
-		// var herd_service herd_format.Data
-		// herd_service.Clusters = append(herd_service.Clusters, metadata_name)
-		// Test(herd_service)
+		if len(scale_herd_data.Clusters) > 0 {
+			_cluster.Auto_scale = scale_herd_data.Clusters[0].Enable_auto_scale
+		}
 
-		// var getHerd herdModel.GetScaleHerdModel
-		// getHerd_data := getHerd.PostData(herd_service)
-		// var getScaleHerd herdModel.GetScaleHerdModel
-		// getScaleHerd.Data.Clusters = append(getScaleHerd.Data.Clusters, metadata_name)
-		// getScaleHerd_data := getScaleHerd.PostData()
-		// if getScaleHerd_data.Clusters == nil {
-			// _cluster.Auto_scale = 0
-		// } else {
-			// _cluster.Auto_scale = getScaleHerd_data.Clusters[0].Enable_auto_scale
-		// }
+		for _, _pod_data_item := range _pod_data.Items {
+			_metadata_name_arr := strings.Split(_pod_data_item.Metadata.Name, "-")
+			_metadata_name := strings.Join(_metadata_name_arr[:len(_metadata_name_arr)-1], "-")
+			if metadata_name != _metadata_name {
+				continue
+			}
+			var _pod pod
+			_pod.Container_name = _pod_data_item.Metadata.Name
+			_pod.Label = _pod_data_item.Metadata.Labels
+			_pod.Public_ip = _pod_data_item.Status.PodIP
+			_pod.Host_ip = _pod_data_item.Status.HostIP
+			_pod.Status = _pod_data_item.Status.Phase
 
+			var getHerd herdModel.GetHerdModel
+			getHerd_data := getHerd.PostData(herd_service)
+
+			var cpuAndMem struct {
+				Cpu []int `json:"cpu"`
+				Mem []int `json:"mem"`
+			}
+
+			for _, cluster := range getHerd_data.Clusters {
+				if len(cluster.Containers) > 0 {
+					for _, _container := range cluster.Containers {
+						cpuAndMem.Cpu = append(cpuAndMem.Cpu, _container.Cpu)
+						cpuAndMem.Mem = append(cpuAndMem.Mem, _container.Mem)
+						if _pod_data_item.Metadata.Name == _container.Container_name {
+							_pod.Cpu = _container.Cpu
+							_pod.Mem = _container.Mem
+						}
+					}
+				}
+			}
+			_cluster.Cpu = sum(cpuAndMem.Cpu)
+			_cluster.Mem = sum(cpuAndMem.Mem)
+			var _image_file image_file
+			_image_file.Name = _pod_data_item.Spec.Containers[0].Name
+			_image_file.Image = _pod_data_item.Spec.Containers[0].Image
+			_pod.Image_file = append(_pod.Image_file, _image_file)
+			
+			_cluster.Pods = append(_cluster.Pods, _pod)
+		}
+
+		_cluster_list.Status = "ok"
 		_cluster_list.Data = append(_cluster_list.Data, _cluster)
     }
-    // fmt.Println(_cluster_list)
-    // Test(_cluster_list)
 
 	return _cluster_list
+}
+
+func sum(a []int) int {
+	var i int
+	for _, v := range a {
+		i += v
+	}
+	return i
 }
 
 
 func (this *ReplicationControllerService) GetReplicationController(rc_name string) Cluster {
 	_replication_controllerModel := k8sModel.ReplicationControllerModel{}
     data := _replication_controllerModel.GetReplicationController(rc_name)
-    Test(data)
 
 	var _cluster Cluster
+	_cluster.Data = this.rc_by_name(data)
+
+	_cluster.Status = "ok"
+	return _cluster
+}
+
+func (this *ReplicationControllerService) rc_by_name(data k8s_format.ReplicationController) cluster_format {
+
+	var _cluster cluster_format
 	_cluster.Cluster_name = data.Metadata.Name
 	_cluster.Label = data.Metadata.Labels
 	_cluster.Port = data.Spec.Template.Spec.Containers[0].Ports[0].ContainerPort
@@ -139,9 +196,6 @@ func (this *ReplicationControllerService) GetReplicationController(rc_name strin
 	_cluster.Container_count = data.Spec.Replicas
 	_cluster.Cpu = 0
 	_cluster.Mem = 0
-
-	_cluster.Status = "ok"
-
 	return _cluster
 }
 
