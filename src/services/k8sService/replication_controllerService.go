@@ -131,16 +131,11 @@ func (this *ReplicationControllerService) GetReplicationControllerList() Cluster
 			var getHerd herdModel.GetHerdModel
 			getHerd_data := getHerd.PostData(herd_service)
 
-			var cpuAndMem struct {
-				Cpu []int `json:"cpu"`
-				Mem []int `json:"mem"`
-			}
-
 			for _, cluster := range getHerd_data.Clusters {
 				if len(cluster.Containers) > 0 {
 					for _, _container := range cluster.Containers {
-						cpuAndMem.Cpu = append(cpuAndMem.Cpu, _container.Cpu)
-						cpuAndMem.Mem = append(cpuAndMem.Mem, _container.Mem)
+						_cluster.Cpu += _container.Cpu
+						_cluster.Mem += _container.Mem
 						if _pod_data_item.Metadata.Name == _container.Container_name {
 							_pod.Cpu = _container.Cpu
 							_pod.Mem = _container.Mem
@@ -148,8 +143,6 @@ func (this *ReplicationControllerService) GetReplicationControllerList() Cluster
 					}
 				}
 			}
-			_cluster.Cpu = sum(cpuAndMem.Cpu)
-			_cluster.Mem = sum(cpuAndMem.Mem)
 			var _image_file image_file
 			_image_file.Name = _pod_data_item.Spec.Containers[0].Name
 			_image_file.Image = _pod_data_item.Spec.Containers[0].Image

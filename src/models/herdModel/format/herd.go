@@ -24,24 +24,24 @@ type service_cluster struct {
 }
 
 type cluster_container struct {
-	Container_name string `json:"container_name,omitempty"`
-	Cpu int `json:"cpu,omitempty"`
-	Mem int `json:"mem,omitempty"`
+	Container_name string `json:"container_name"`
+	Cpu int `json:"cpu"`
+	Mem int `json:"mem"`
 }
 
 type cluster struct {
-	Containers []container `json:"containers,omitempty"`
-	Enable_auto_scale int `json:"enable_auto_scale,omitempty"`
-	Cpu_min int `json:"cpu_min,omitempty"`
-	Cpu_max int `json:"cpu_max,omitempty"`
-	Pod_min int `json:"pod_min,omitempty"`
-	Pod_max int `json:"pod_max,omitempty"`
+	Containers []container `json:"containers"`
+	Enable_auto_scale int `json:"enable_auto_scale"`
+	Cpu_min int `json:"cpu_min"`
+	Cpu_max int `json:"cpu_max"`
+	Pod_min int `json:"pod_min"`
+	Pod_max int `json:"pod_max"`
 }
 
 type container struct {
-	Container_name string `json:"container_name,omitempty"`
-	Cpu int `json:"cpu,omitempty"`
-	Mem int `json:"mem,omitempty"`
+	Container_name string `json:"container_name"`
+	Cpu int `json:"cpu"`
+	Mem int `json:"mem"`
 }
 
 //---------------

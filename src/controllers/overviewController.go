@@ -20,9 +20,9 @@ func (this *OverviewController) Get(request *restful.Request, response *restful.
 	// fmt.Println(_overview_service.GetReplicationControllerCount())
 	// fmt.Println(_overview_service.GetPodCount())
     // fmt.Println(_overview_service.GetMachineCount())
-	fmt.Println(_overview_service.GetAllCount())
-    response.WriteEntity("overview")
-    // response.WriteEntity(r)
+	// fmt.Println(_overview_service.GetAllCount())
+    // response.WriteEntity("overview")
+    response.WriteEntity(_overview_service.GetAllCount())
     return
 }
 

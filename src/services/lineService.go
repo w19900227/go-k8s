@@ -45,8 +45,14 @@ func (this *LineService) Post(data []byte) string {
 	// 	_get_service_data.Spec.Selector = _get_replication_controller_data.Spec.Selector
 	// }
 
+    if _get_service_data.Spec.Selector == nil {
+    	fmt.Println("service no selector")
+    	return "service no selector"
+    }
+
 	_get_service_data.Spec.Selector = _get_replication_controller_data.Spec.Selector
 
+	service_model.UpdateService(_data_format.Service_name, _get_service_data)
 	// _put_service_data := service_model.UpdateService(_data_format.Service_name, _get_service_data)
 	// if _put_service_data.Status_code == "200" {
 	// 	Status = "ok"
@@ -68,11 +74,21 @@ func (this *LineService) Delete(data []byte) string {
 	replication_controller_model := k8sModel.ReplicationControllerModel{}
     _get_replication_controller_data := replication_controller_model.GetReplicationController(_data_format.Cluster_name)
 
-    if _get_service_data.Spec.Selector["name"] == _get_replication_controller_data.Spec.Selector["name"] {
-    	fmt.Println("YES")
-    } else {
-    	fmt.Println("NO")
+    if _get_service_data.Spec.Selector == nil {
+    	fmt.Println("service no selector")
+    	return "service no selector"
     }
+
+    if _get_service_data.Spec.Selector["name"] != _get_replication_controller_data.Spec.Selector["name"] {
+    	fmt.Println("status : fail")
+    	return "status : fail"
+    }
+
+    _get_service_data.Spec.Selector["name"] = _get_service_data.Spec.Selector["name"]+"-giga"
+    service_model.UpdateService(_data_format.Service_name, _get_service_data)
+
+
+
 
 	// if _get_service_data.Spec.Selector == nil {
 	// 	Status = "fail"

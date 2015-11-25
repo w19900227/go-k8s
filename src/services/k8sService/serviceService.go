@@ -187,6 +187,7 @@ func (this *ServiceService) Service() ServiceList {
 func (this *ServiceService) ServiceByName(name string) Service {
 	service_model := k8sModel.ServiceModel{}
 	data := service_model.GetService(name)
+	Test(data)
 	_service := this.service_by_name(name, data)
 	_service.Status = "ok"
 

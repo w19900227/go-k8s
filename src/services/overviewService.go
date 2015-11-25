@@ -22,19 +22,19 @@ type OverviewService struct {
 	bs.BaseService
 }
 
-type sevice_info struct {
-	Container_run int `json:"container_run,omitempty"`  
-	Container_total int `json:"container_total,omitempty"` 
-	Cpu int `json:"cpu,omitempty"` 
-	Mem int `json:"mem,omitempty"` 
-	Name int `json:"name,omitempty"` 
+type service_info struct {
+	Name string `json:"name"` 
+	Container_run int `json:"container_run"`  
+	Container_total int `json:"container_total"` 
+	Cpu int `json:"cpu"` 
+	Mem float64 `json:"mem"` 
 }
 type machine_info struct {
-	Cpu int `json:"cpu,omitempty"`
-	Ip string `json:"ip,omitempty"`
-	Mem float64 `json:"mem,omitempty"`
-	Name string `json:"name,omitempty"`
-	Status  string `json:"status,omitempty"`
+	Name string `json:"name"`
+	Ip string `json:"ip"`
+	Cpu int `json:"cpu"`
+	Mem float64 `json:"mem"`
+	Status  string `json:"status"`
 }
 type Overview struct {
 	Status string `json:"status,omitempty"`
@@ -45,7 +45,7 @@ type Overview struct {
 	Pod_count int `json:"container_count,omitempty"`
 	Machine_count int `json:"machine_count,omitempty"`
 	Service_count int `json:"service_count,omitempty"`
-	Sevice_info []sevice_info `json:"sevice_info,omitempty"`
+	Service_info []service_info `json:"service_info,omitempty"`
 	Machine_info []machine_info `json:"machine_info,omitempty"`
 }
 type OverviewList struct {
@@ -55,7 +55,7 @@ type OverviewList struct {
 	Data Overview `json:"data,omitempty"`
 }
 
-func (this *OverviewService) GetAllCount() string {
+func (this *OverviewService) GetAllCount() OverviewList {
 	var _overview_list OverviewList
 	_overview_list.Status = "ok"
 
@@ -72,12 +72,12 @@ func (this *OverviewService) GetAllCount() string {
 	_overview_list.Data.Pod_count = _pod_count.Data.Pod_count
 
 	_service_info := this.GetServiceInfo()
+	_overview_list.Data.Service_info = _service_info.Data.Service_info
 
 	_machine_info := this.GetMachineInfo()
 	_overview_list.Data.Machine_info = _machine_info.Data.Machine_info
 
-	Test(_service_info)
-	return "ss"
+	return _overview_list
 }
 
 func (this *OverviewService) GetServiceCount() OverviewList {
@@ -155,16 +155,26 @@ func (this *OverviewService) GetServiceInfo() OverviewList {
 	service_model := k8sModel.ServiceModel{}
     data := service_model.GetServiceList()
 
+	rc_model := k8sModel.ReplicationControllerModel{}
+    rc_data := rc_model.GetReplicationControllerList()
+
+    machine_data := this.GetMachineInfo()
+    var total_mem float64 = 0
+    for _, _machine_data := range machine_data.Data.Machine_info {
+    	total_mem += _machine_data.Mem
+    }
+
 	var _overview_list OverviewList
 	_overview_list.Status = "ok"
 
-	// var i int = 0
  	for _, data_items := range data.Items {
 		metadata_name := data_items.Metadata.Name
 		if metadata_name == "kube-dns" || metadata_name == "kubernetes" {
 			continue
 		}
 
+		var _service_info service_info
+		_service_info.Name = metadata_name
 
 		var herd_service herd_format.Data
 		herd_service.Services = append(herd_service.Services, metadata_name)
@@ -172,14 +182,34 @@ func (this *OverviewService) GetServiceInfo() OverviewList {
 		var getHerd herdModel.GetHerdModel
 		getHerd_data := getHerd.PostData(herd_service)
 
-		Test(herd_service)
-		Test(getHerd_data)
-		// i = i + 1
-		fmt.Println("")
+		var cpu int = 0
+		var mem int = 0
+		for _, service_herd := range getHerd_data.Services {
+			if len(service_herd.Clusters) > 0 {
+				for _, cluster_herd := range service_herd.Clusters {
+					if len(cluster_herd.Containers) > 0 {
+						for _, container_herd := range cluster_herd.Containers {
+							cpu += container_herd.Cpu
+							mem += container_herd.Mem
+						}
+					}
+				}
+			}
+		}
+		_service_info.Cpu = cpu
+		_service_info.Mem = (float64(mem)/total_mem)*100
+		for _, _rc_data_itme := range rc_data.Items {
+			if data_items.Spec.Selector != nil {
+				if data_items.Spec.Selector["name"] == _rc_data_itme.Spec.Selector["name"] {
+					_service_info.Container_total += _rc_data_itme.Spec.Replicas
+					_service_info.Container_run += _rc_data_itme.Spec.Replicas
+					
+				}
+			}
+		}
+		_overview_list.Data.Service_info = append(_overview_list.Data.Service_info, _service_info)
 	}
 
-	fmt.Println("")
-	// _overview_list.Data.Service_count = i
 	return _overview_list
 }
 
