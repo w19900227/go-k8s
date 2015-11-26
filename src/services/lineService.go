@@ -27,7 +27,14 @@ type data_format struct {
 	Cluster_name string `json:"cluster_name,omitempty"`
 }
 
-func (this *LineService) Post(data []byte) string {
+type line struct {
+	Status string `json:"status,omitempty"`
+	Errno string `json:"errno,omitempty"`
+	Errmsg string `json:"errmsg,omitempty"`
+	Data Overview `json:"data,omitempty"`
+}
+
+func (this *LineService) Post(data []byte) line {
 	fmt.Println("[Post] LineService")
 
 	var _data_format data_format
@@ -39,15 +46,12 @@ func (this *LineService) Post(data []byte) string {
 	replication_controller_model := k8sModel.ReplicationControllerModel{}
     _get_replication_controller_data := replication_controller_model.GetReplicationController(_data_format.Cluster_name)
 
-	// if _get_service_data.Spec.Selector == nil {
-	// 	_get_service_data.Spec.Selector = _get_replication_controller_data.Spec.Selector
-	// } else {
-	// 	_get_service_data.Spec.Selector = _get_replication_controller_data.Spec.Selector
-	// }
+    var _line line
 
     if _get_service_data.Spec.Selector == nil {
-    	fmt.Println("service no selector")
-    	return "service no selector"
+    	_line.Status = "fail"
+    	_line.Errmsg = "service no selector"
+    	return _line
     }
 
 	_get_service_data.Spec.Selector = _get_replication_controller_data.Spec.Selector
@@ -59,10 +63,10 @@ func (this *LineService) Post(data []byte) string {
 	// } else {
 	// 	Status = "fail"
 	// }
-	Test(_get_service_data)
-    return "sss"
+    _line.Status = "ok"
+    return _line
 }
-func (this *LineService) Delete(data []byte) string {
+func (this *LineService) Delete(data []byte) line {
 	fmt.Println("[Delete] LineService")
 	
 	var _data_format data_format
@@ -74,32 +78,24 @@ func (this *LineService) Delete(data []byte) string {
 	replication_controller_model := k8sModel.ReplicationControllerModel{}
     _get_replication_controller_data := replication_controller_model.GetReplicationController(_data_format.Cluster_name)
 
+    var _line line
+
     if _get_service_data.Spec.Selector == nil {
-    	fmt.Println("service no selector")
-    	return "service no selector"
+    	_line.Status = "fail"
+    	_line.Errmsg = "service no selector"
+    	return _line
     }
 
     if _get_service_data.Spec.Selector["name"] != _get_replication_controller_data.Spec.Selector["name"] {
-    	fmt.Println("status : fail")
-    	return "status : fail"
+    	_line.Status = "fail"
+    	_line.Errmsg = "service and cluster not same"
+    	return _line
     }
 
     _get_service_data.Spec.Selector["name"] = _get_service_data.Spec.Selector["name"]+"-giga"
     service_model.UpdateService(_data_format.Service_name, _get_service_data)
 
-
-
-
-	// if _get_service_data.Spec.Selector == nil {
-	// 	Status = "fail"
-	// 	Errmsg = "There is not have relate between Service and Cluster"
-	// }
-
-	// _get_service_data.Spec.Selector = map[string]string{"name":_data_format.Cluster_name}
-	
-	Test(_get_service_data)
-	
-    // response.WriteEntity(r)
-    return "sss"
+    _line.Status = "ok"
+    return _line
 }
 

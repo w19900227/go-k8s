@@ -24,9 +24,7 @@ func (this *LineController) Post(request *restful.Request, response *restful.Res
     }
     
     var _line_service services.LineService
-	fmt.Println(_line_service.Post(body))
-    response.WriteEntity("LineController")
-    // response.WriteEntity(r)
+    response.WriteEntity(_line_service.Post(body))
     return
 }
 func (this *LineController) Delete(request *restful.Request, response *restful.Response) {
@@ -40,8 +38,6 @@ func (this *LineController) Delete(request *restful.Request, response *restful.R
     }
 	
     var _line_service services.LineService
-	fmt.Println(_line_service.Delete(body))
-    response.WriteEntity("LineController")
-    // response.WriteEntity(r)
+    response.WriteEntity(_line_service.Delete(body))
     return
 }
