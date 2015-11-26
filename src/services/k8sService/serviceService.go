@@ -56,22 +56,25 @@ type sub_Ports struct {
 	Port int `json:"port"`
 	External_port int `json:"external_port"`
 }
-type Service struct {
-	Status string `json:"status,omitempty"`
-	Errno string `json:"errno,omitempty"`
-	Errmsg string `json:"errmsg,omitempty"`
+type Service_format struct {
 	Label map[string]string `json:"label,omitempty"`
 	Ports []sub_Ports `json:"ports,omitempty"`
 	MachineStatus string `json:"machine_status,omitempty"`
 	Cpu int `json:"cpu"`
 	Memory int `json:"memory"`
 	Service_name string `json:"service_name,omitempty"`
+}
+type Service struct {
+	Status string `json:"status,omitempty"`
+	Errno string `json:"errno,omitempty"`
+	Errmsg string `json:"errmsg,omitempty"`
+	Data Service_format `json:"data,omitempty"`
 }	
 type ServiceList struct {
 	Status string `json:"status,omitempty"`
 	Errno string `json:"errno,omitempty"`
 	Errmsg string `json:"errmsg,omitempty"`
-	Data []Service `json:"data,omitempty"`
+	Data []Service_format `json:"data,omitempty"`
 }
 // func (this *ServiceService) Service_bak() types.ServiceList {
 //     service_model := k8sModel.ServiceModel{}
@@ -158,7 +161,7 @@ type ServiceList struct {
 //     // fmt.Println(data.ApiVersion)
 // }
 
-func (this *ServiceService) Service() ServiceList {
+func (this *ServiceService) GetServiceList() ServiceList {
     service_model := k8sModel.ServiceModel{}
     data := service_model.GetServiceList()
 	var _service_list ServiceList
@@ -170,7 +173,7 @@ func (this *ServiceService) Service() ServiceList {
 		}
 
 		data := service_model.GetService(metadata_name)
-		_service := this.service_by_name(metadata_name, data)
+		_service := this.ServiceByName(metadata_name, data)
 		_service_list.Data = append(_service_list.Data, _service)
 	}
     return _service_list
@@ -184,11 +187,13 @@ func (this *ServiceService) Service() ServiceList {
     // fmt.Println(data.ApiVersion)
 }
 
-func (this *ServiceService) ServiceByName(name string) Service {
+func (this *ServiceService) GetService(name string) Service {
 	service_model := k8sModel.ServiceModel{}
 	data := service_model.GetService(name)
-	Test(data)
-	_service := this.service_by_name(name, data)
+	// Test(data)
+	var _service Service
+
+	_service.Data = this.ServiceByName(name, data)
 	_service.Status = "ok"
 
 	return _service
@@ -270,17 +275,17 @@ func (this *ServiceService) DeleteService(name string) Service {
 	return _service
 }
 
-func (this *ServiceService) service_by_name(name string, data k8s_format.Service) Service {
+func (this *ServiceService) ServiceByName(name string, data k8s_format.Service) Service_format {
     // service_model := k8sModel.ServiceModel{}
     // data := service_model.GetService(name)
 	// var _service_list ServiceList
 
-	var _service Service
+	var _service Service_format
 
 	metadata_name := data.Metadata.Name
 	if metadata_name == "kube-dns" || metadata_name == "kubernetes" {
-		_service.Status = "fail"
-		_service.Errmsg = "no found service"
+		// _service.Status = "fail"
+		// _service.Errmsg = "no found service"
 		return _service
 	}
 

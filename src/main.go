@@ -55,6 +55,11 @@ func IndexRouter() *restful.WebService {
 
     router.Route(router.POST("/line").To(line.Post))
     router.Route(router.DELETE("/line").To(line.Delete))
+
+    var bubble controllers.BubbleController
+
+    router.Route(router.GET("/bubble/info").To(bubble.GetInfo))
+    router.Route(router.GET("/bubble/relate").To(bubble.GetRelate))
  
     return router
 }

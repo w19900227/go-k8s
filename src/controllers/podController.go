@@ -18,7 +18,7 @@ func (this *PodController) Get(request *restful.Request, response *restful.Respo
     fmt.Print(pod_name)
 	
     var _pod_service k8sService.PodService
-    response.WriteEntity(_pod_service.PodByName(pod_name))
+    response.WriteEntity(_pod_service.GetPod(pod_name))
     return
 }
 

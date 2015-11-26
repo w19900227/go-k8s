@@ -21,7 +21,7 @@ func (this *ServiceController) Get(request *restful.Request, response *restful.R
     
     var list_service k8sService.ServiceService
 
-    response.WriteEntity(list_service.ServiceByName(service_name))
+    response.WriteEntity(list_service.GetService(service_name))
     return
 }
 
@@ -29,7 +29,7 @@ func (this *ServiceController) GetList(request *restful.Request, response *restf
 	fmt.Println("[GetList] Service List")
 	var list_service k8sService.ServiceService
 
-    response.WriteEntity(list_service.Service())
+    response.WriteEntity(list_service.GetServiceList())
     return
 }
 

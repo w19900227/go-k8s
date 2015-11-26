@@ -43,10 +43,7 @@ type Container struct {
 	Name string `json:"name,omitempty"`
 	Image string `json:"image,omitempty"`
 }
-type Pod struct {
-	Status string `json:"status,omitempty"`
-	Errno string `json:"errno,omitempty"`
-	Errmsg string `json:"errmsg,omitempty"`
+type Pod_format struct {
 	Container_name string `json:"container_name"`
 	Service_name string `json:"service_name,omitempty"`
 	Cpu int `json:"cpu,omitempty"`
@@ -55,12 +52,18 @@ type Pod struct {
 	Containers []Container `json:"containers,omitempty"`
 	Label map[string]string `json:"label,omitempty"`
 }
+type Pod struct {
+	Status string `json:"status,omitempty"`
+	Errno string `json:"errno,omitempty"`
+	Errmsg string `json:"errmsg,omitempty"`
+	Data Pod_format `json:"data,omitempty"`
+}
 
 type PodList struct {
 	Status string `json:"status,omitempty"`
 	Errno string `json:"errno,omitempty"`
 	Errmsg string `json:"errmsg,omitempty"`
-	Pod []Pod `json:"data,omitempty"`
+	Data []Pod_format `json:"data,omitempty"`
 }
 
 func (this *PodService) GetTest() string {
@@ -81,18 +84,26 @@ func (this *PodService) GetPodList() PodList {
 		}
 
 		data := _podModel.PodByName(data_items.Metadata.Name)
-		_pod := this.pod_by_name(data_items.Metadata.Name, data)
-		_pod_list.Pod = append(_pod_list.Pod, _pod)
+		_pod := this.PodByName(data_items.Metadata.Name, data)
+		_pod_list.Data = append(_pod_list.Data, _pod)
 	}
 	return _pod_list
 }
 
-func (this *PodService) PodByName(name string) Pod {
+func (this *PodService) GetPod(name string) Pod {
+	var _pod Pod
 
 	_podModel := k8sModel.PodModel{}
 	data := _podModel.PodByName(name)
-	// Test(data)
-	_pod := this.pod_by_name(name, data)
+
+	_metadata_name_arr := strings.Split(data.Metadata.Name, "-")
+	_metadata_name := strings.Join(_metadata_name_arr[:len(_metadata_name_arr)-1], "-")
+	if _metadata_name == "kube-dns-v3" {
+		_pod.Status = "fail"
+		return _pod
+	}
+
+	_pod.Data = this.PodByName(name, data)
 	_pod.Status = "ok"
 	return _pod
 }
@@ -101,20 +112,20 @@ func (this *PodService) DeletePod(name string) Pod {
 
 	_podModel := k8sModel.PodModel{}
 	_podModel.DeletePod(name)
-	// _pod := this.pod_by_name(name, data)
+
 	var _pod Pod
 	_pod.Status = "ok"
 	return _pod
 }
 
-func (this *PodService) pod_by_name(name string, data k8s_format.Pod) Pod {
+func (this *PodService) PodByName(name string, data k8s_format.Pod) Pod_format {
 	
-	var _pod Pod
-	_metadata_name_arr := strings.Split(data.Metadata.Name, "-")
-	_metadata_name := strings.Join(_metadata_name_arr[:len(_metadata_name_arr)-1], "-")
-	if _metadata_name == "kube-dns-v3" {
-		return _pod
-	}
+	var _pod Pod_format
+	// _metadata_name_arr := strings.Split(data.Metadata.Name, "-")
+	// _metadata_name := strings.Join(_metadata_name_arr[:len(_metadata_name_arr)-1], "-")
+	// if _metadata_name == "kube-dns-v3" {
+	// 	return _pod
+	// }
 	_pod.Label = data.Metadata.Labels
 
 	_pod.Container_name = data.Metadata.Name

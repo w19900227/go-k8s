@@ -46,7 +46,7 @@ type pod struct {
 	Status string `json:"status,omitempty"`
 }
 
-type cluster_format struct {
+type Cluster_format struct {
 	Auto_scale int `json:"auto_scale"`
 	Pods []pod `json:"container_info,omitempty"`
 	Status string `json:"status,omitempty"`
@@ -65,17 +65,14 @@ type Cluster struct {
 	Status string `json:"status,omitempty"`
 	Errno string `json:"errno,omitempty"`
 	Errmsg string `json:"errmsg,omitempty"`
-	Data cluster_format `json:"data,omitempty"`
-
-
-
+	Data Cluster_format `json:"data,omitempty"`
 }
 	
 type ClusterList struct {
 	Status string `json:"status,omitempty"`
 	Errno string `json:"errno,omitempty"`
 	Errmsg string `json:"errmsg,omitempty"`
-	Data []cluster_format `json:"data,omitempty"`
+	Data []Cluster_format `json:"data,omitempty"`
 }
 
 
@@ -99,8 +96,8 @@ func (this *ReplicationControllerService) GetReplicationControllerList() Cluster
     		continue
     	}
 
-		var _cluster cluster_format
-		_cluster = this.rc_by_name(data_items)
+		var _cluster Cluster_format
+		_cluster = this.RcByName(data_items)
 
 		replicas := strconv.Itoa(data_items.Status.Replicas)
 		_cluster.Status = replicas + "/" + replicas
@@ -172,15 +169,15 @@ func (this *ReplicationControllerService) GetReplicationController(rc_name strin
     data := _replication_controllerModel.GetReplicationController(rc_name)
 
 	var _cluster Cluster
-	_cluster.Data = this.rc_by_name(data)
+	_cluster.Data = this.RcByName(data)
 
 	_cluster.Status = "ok"
 	return _cluster
 }
 
-func (this *ReplicationControllerService) rc_by_name(data k8s_format.ReplicationController) cluster_format {
+func (this *ReplicationControllerService) RcByName(data k8s_format.ReplicationController) Cluster_format {
 
-	var _cluster cluster_format
+	var _cluster Cluster_format
 	_cluster.Cluster_name = data.Metadata.Name
 	_cluster.Label = data.Metadata.Labels
 	_cluster.Port = data.Spec.Template.Spec.Containers[0].Ports[0].ContainerPort
