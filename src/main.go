@@ -31,6 +31,7 @@ func main() {
     restful.Add(ServiceRouter())
     restful.Add(ReplicationControllerRouter())
     restful.Add(PodRouter())
+    restful.Add(NodeRouter())
 
 
 
@@ -110,14 +111,33 @@ func PodRouter() *restful.WebService {
         Consumes(restful.MIME_JSON, restful.MIME_JSON).
         Produces(restful.MIME_JSON, restful.MIME_JSON)
 
-	// listPod := controllers.PodController{}
-	var listPod controllers.PodController
+    // listPod := controllers.PodController{}
+    var listPod controllers.PodController
 
     router.Route(router.GET("/{name}").To(listPod.Get))
     router.Route(router.GET("/").To(listPod.GetList))
     router.Route(router.POST("/").To(listPod.Post))
     router.Route(router.PUT("/{name}").To(listPod.Put))
     router.Route(router.DELETE("/{name}").To(listPod.Delete))
+ 
+    return router
+}
+
+func NodeRouter() *restful.WebService {
+    router := new(restful.WebService)
+    router.
+        Path("/machine").
+        Consumes(restful.MIME_JSON, restful.MIME_JSON).
+        Produces(restful.MIME_JSON, restful.MIME_JSON)
+
+    // listNode := controllers.PodController{}
+    var listNode controllers.NodeController
+
+    // router.Route(router.GET("/{name}").To(listNode.Get))
+    router.Route(router.GET("/").To(listNode.GetList))
+    // router.Route(router.POST("/").To(listNode.Post))
+    // router.Route(router.PUT("/{name}").To(listNode.Put))
+    // router.Route(router.DELETE("/{name}").To(listNode.Delete))
  
     return router
 }
