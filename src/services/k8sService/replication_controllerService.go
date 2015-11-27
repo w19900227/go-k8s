@@ -81,7 +81,6 @@ func (this *ReplicationControllerService) GetTest() string {
 }
 
 func (this *ReplicationControllerService) GetReplicationControllerList() ClusterList {
-	// replicationcontrollers
 	_replication_controllerModel := k8sModel.ReplicationControllerModel{}
     data := _replication_controllerModel.GetReplicationControllerList()
 
@@ -154,15 +153,6 @@ func (this *ReplicationControllerService) GetReplicationControllerList() Cluster
 
 	return _cluster_list
 }
-
-func sum(a []int) int {
-	var i int
-	for _, v := range a {
-		i += v
-	}
-	return i
-}
-
 
 func (this *ReplicationControllerService) GetReplicationController(rc_name string) Cluster {
 	_replication_controllerModel := k8sModel.ReplicationControllerModel{}
@@ -254,7 +244,6 @@ func (this *ReplicationControllerService) UpdateReplicationController(rc_name st
 	_replication_controllerModel.UpdateReplicationController(rc_name, _k8s_rc)
 
 	_cluster.Status = "ok"
-
 	return _cluster
 }
 
@@ -264,8 +253,6 @@ func (this *ReplicationControllerService) DeleteReplicationController(rc_name st
 	_k8s_rc.Spec.Replicas = 0
 	_replication_controllerModel.UpdateReplicationController(rc_name, _k8s_rc)
     _replication_controllerModel.DeleteReplicationController(rc_name)
-
-
 
 	var _cluster Cluster
 	_cluster.Status = "ok"

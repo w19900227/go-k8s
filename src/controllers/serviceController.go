@@ -74,6 +74,21 @@ func (this *ServiceController) Delete(request *restful.Request, response *restfu
     return
 }
 
+func (this *ServiceController) CreateBoth(request *restful.Request, response *restful.Response) {
+    fmt.Println("[Post] both")
+
+    body, err := ioutil.ReadAll(request.Request.Body)
+
+    if err != nil {
+        response.WriteEntity("fail")
+        return 
+    }
+
+    var list_service k8sService.ServiceService
+    response.WriteEntity(list_service.CreateBoth(body))
+    return
+}
+
 
 func Test(result interface{}) {
     js, _ := json.Marshal(result)

@@ -239,6 +239,8 @@ func (this *OverviewService) GetMachineInfo() OverviewList {
 	}
 	return _overview_list
 }
+
+
 func Test(result interface{}) {
 	js, _ := json.Marshal(result)
 	fmt.Println(string(js))

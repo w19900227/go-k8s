@@ -59,7 +59,7 @@ type sub_Ports struct {
 type Service_format struct {
 	Label map[string]string `json:"label,omitempty"`
 	Ports []sub_Ports `json:"ports,omitempty"`
-	MachineStatus string `json:"machine_status,omitempty"`
+	Status string `json:"status,omitempty"`
 	Cpu int `json:"cpu"`
 	Memory int `json:"memory"`
 	Service_name string `json:"service_name,omitempty"`
@@ -257,7 +257,7 @@ func (this *ServiceService) UpdateService(name string, data []byte) Service {
 	_k8s_service.Metadata.Labels = _service_format.Label
 	_k8s_service.Spec.Ports[0].Port, _ = strconv.Atoi(_service_format.Port)
 	_k8s_service.Spec.Ports[0].TargetPort, _ = strconv.Atoi(_service_format.Port)
-	_k8s_service.Spec.Selector["name"] = _service_format.Service_name
+	_k8s_service.Spec.Selector["name"] = name
 	
     service_model.UpdateService(name, _k8s_service)
 	_service.Status = "ok"
@@ -298,8 +298,8 @@ func (this *ServiceService) ServiceByName(name string, data k8s_format.Service) 
 	var getHerd herdModel.GetHerdModel
 	getHerd_data := getHerd.PostData(herd_service)
 	var cpuAndMem struct {
-		cpu []int
-		mem []int
+		Cpu []int
+		Mem []int
 	}
 
 	for _, service := range getHerd_data.Services {
@@ -307,8 +307,8 @@ func (this *ServiceService) ServiceByName(name string, data k8s_format.Service) 
 			for _, _cluster :=  range service.Clusters {
 				if len(_cluster.Containers) > 0 {
 					for _, _container := range _cluster.Containers {
-						cpuAndMem.cpu = append(cpuAndMem.cpu, _container.Cpu)
-						cpuAndMem.mem = append(cpuAndMem.mem, _container.Mem)
+						cpuAndMem.Cpu = append(cpuAndMem.Cpu, _container.Cpu)
+						cpuAndMem.Mem = append(cpuAndMem.Mem, _container.Mem)
 					}
 				}
 			}
@@ -323,18 +323,76 @@ func (this *ServiceService) ServiceByName(name string, data k8s_format.Service) 
 	}
 
 	if len(data.Spec.Selector) < 1 {
-		_service.MachineStatus = "Forward"
+		_service.Status = "Forward"
 		_service.Cpu = 0
 		_service.Memory = 0
 	} else {
-		cpu := strconv.Itoa(len(cpuAndMem.cpu))
-		mem := strconv.Itoa(len(cpuAndMem.mem))
-		_service.MachineStatus = cpu+"/"+mem
-		_service.Cpu = len(cpuAndMem.cpu)
-		_service.Memory = len(cpuAndMem.mem)
+		cpu := strconv.Itoa(len(cpuAndMem.Cpu))
+		mem := strconv.Itoa(len(cpuAndMem.Mem))
+		_service.Status = cpu+"/"+mem
+		_service.Cpu = len(cpuAndMem.Cpu)
+		_service.Memory = len(cpuAndMem.Mem)
 	}
 		
     return _service
+}
+
+func (this *ServiceService) CreateBoth(data []byte) Service {
+	var data_format struct {
+		Service_name string `json:"service_name"`
+		Port string `json:"port"`
+		Container_count string `json:"container_count"`
+		Cpu string `json:"cpu"`
+		Image string `json:"image"`
+		Label map[string]string `json:"label"`
+	}
+	json.Unmarshal(data, &data_format)
+
+	var _k8s_service  k8s_format.Service
+	_k8s_service.Kind = "Service"
+	_k8s_service.Metadata.Name = data_format.Service_name
+	_k8s_service.Metadata.Labels = data_format.Label
+	_k8s_service.Metadata.Labels["name"] = data_format.Service_name
+	_k8s_service.Spec.Type = "NodePort"
+	_k8s_service.Spec.Selector = map[string]string{"name": data_format.Service_name}
+
+	var _k8s_service_ports k8s_format.ServicePort
+	_k8s_service_ports.Port, _ = strconv.Atoi(data_format.Port)
+	_k8s_service_ports.TargetPort, _ = strconv.Atoi(data_format.Port)
+	_k8s_service_ports.Protocol = "TCP"
+	_k8s_service.Spec.Ports = append(_k8s_service.Spec.Ports, _k8s_service_ports)
+
+
+
+	var k8s_rc k8s_format.ReplicationController
+	k8s_rc.Kind = "ReplicationController"
+	k8s_rc.Metadata.Name = data_format.Service_name
+	k8s_rc.Metadata.Labels = data_format.Label
+	k8s_rc.Metadata.Labels["name"] = data_format.Service_name
+	k8s_rc.Spec.Replicas, _ = strconv.Atoi(data_format.Container_count)
+	k8s_rc.Spec.Selector = map[string]string{"name": data_format.Service_name}
+	k8s_rc.Spec.Template.Metadata.Labels = map[string]string{"name": data_format.Service_name}
+
+	var k8s_rc_container_port k8s_format.ContainerPort
+	k8s_rc_container_port.ContainerPort, _ = strconv.Atoi(data_format.Port)
+
+	var k8s_rc_container k8s_format.Container
+	k8s_rc_container.Name = data_format.Service_name
+	k8s_rc_container.Image = data_format.Image
+	k8s_rc_container.Ports = append(k8s_rc_container.Ports, k8s_rc_container_port)
+	k8s_rc.Spec.Template.Spec.Containers = append(k8s_rc.Spec.Template.Spec.Containers, k8s_rc_container)
+
+	var rc_model k8sModel.ReplicationControllerModel
+	var service_model k8sModel.ServiceModel
+
+	rc_model.CreateReplicationController(k8s_rc)
+	service_model.CreateService(_k8s_service)
+	// _rc_service := data_format
+
+	var service Service
+	service.Status = "ok"
+	// service.Data = ""
+	return service
 }
 
 func Test(result interface{}) {

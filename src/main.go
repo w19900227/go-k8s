@@ -81,7 +81,8 @@ func ServiceRouter() *restful.WebService {
     router.Route(router.POST("/").To(listService.Post))
     router.Route(router.PUT("/{name}").To(listService.Put))
     router.Route(router.DELETE("/{name}").To(listService.Delete))
- 
+    router.Route(router.POST("/both").To(listService.CreateBoth))
+
     return router
 }
 
