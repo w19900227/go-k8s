@@ -24,9 +24,9 @@ type BubbleService struct {
 }
 
 type item struct {
-	Services []string `json:"services"`
-	Clusters []string `json:"clusters"`
-	Containers []string `json:"containers"`
+	Services []string `json:"services,omitempty"`
+	Clusters []string `json:"clusters,omitempty"`
+	Containers []string `json:"containers,omitempty"`
 }
 type relate struct {
 	Cluster_name string `json:"cluster_name"`

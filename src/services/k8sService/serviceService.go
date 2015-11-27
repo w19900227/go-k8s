@@ -61,7 +61,7 @@ type Service_format struct {
 	Ports []sub_Ports `json:"ports,omitempty"`
 	Status string `json:"status,omitempty"`
 	Cpu int `json:"cpu"`
-	Memory int `json:"memory"`
+	Mem int `json:"mem"`
 	Service_name string `json:"service_name,omitempty"`
 }
 type Service struct {
@@ -138,13 +138,13 @@ type ServiceList struct {
 // 				if len(data_items.Spec.Selector) < 1 {
 // 					_service.Status = "Forward"
 // 					_service.Cpu = 0
-// 					_service.Memory = 0
+// 					_service.Mem = 0
 // 				} else {
 // 					cpu := strconv.Itoa(len(cpuAndMem.cpu))
 // 					mem := strconv.Itoa(len(cpuAndMem.mem))
 // 					_service.Status = cpu+"/"+mem
 // 					_service.Cpu = len(cpuAndMem.cpu)
-// 					_service.Memory = len(cpuAndMem.mem)
+// 					_service.Mem = len(cpuAndMem.mem)
 // 				}
 // 			}
 // 		}
@@ -325,13 +325,13 @@ func (this *ServiceService) ServiceByName(name string, data k8s_format.Service) 
 	if len(data.Spec.Selector) < 1 {
 		_service.Status = "Forward"
 		_service.Cpu = 0
-		_service.Memory = 0
+		_service.Mem = 0
 	} else {
 		cpu := strconv.Itoa(len(cpuAndMem.Cpu))
 		mem := strconv.Itoa(len(cpuAndMem.Mem))
 		_service.Status = cpu+"/"+mem
 		_service.Cpu = len(cpuAndMem.Cpu)
-		_service.Memory = len(cpuAndMem.Mem)
+		_service.Mem = len(cpuAndMem.Mem)
 	}
 		
     return _service

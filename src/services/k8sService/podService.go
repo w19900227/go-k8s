@@ -34,7 +34,7 @@ type PodService struct {
 	// this.namespace = "/namespaces/default/"
 	// this.hred_ip = "http://192.168.6.14:8090"
 // }
-type status struct {
+type port struct {
 	Phase string `json:"phase,omitempty"`
 	Public_ip string `json:"public_ip,omitempty"`
 	Host_ip string `json:"host_ip,omitempty"`
@@ -46,9 +46,9 @@ type Container struct {
 type Pod_format struct {
 	Container_name string `json:"container_name"`
 	Service_name string `json:"service_name,omitempty"`
-	Cpu int `json:"cpu,omitempty"`
-	Memory int `json:"memory,omitempty"`
-	MachineStatus status `json:"machine_status,omitempty"`
+	Cpu int `json:"cpu"`
+	Mem int `json:"mem"`
+	Ports port `json:"ports,omitempty"`
 	Containers []Container `json:"containers,omitempty"`
 	Label map[string]string `json:"label,omitempty"`
 }
@@ -140,11 +140,11 @@ func (this *PodService) PodByName(name string, data k8s_format.Pod) Pod_format {
 	getHerd_data := getHerd.PostData(herd_service)
 	_herd_container := getHerd_data.Containers[0]
 	_pod.Cpu = _herd_container.Cpu
-	_pod.Memory = _herd_container.Mem
+	_pod.Mem = _herd_container.Mem
 
-	_pod.MachineStatus.Phase = data.Status.Phase
-	_pod.MachineStatus.Public_ip = data.Status.PodIP
-	_pod.MachineStatus.Host_ip = data.Status.HostIP
+	_pod.Ports.Phase = data.Status.Phase
+	_pod.Ports.Public_ip = data.Status.PodIP
+	_pod.Ports.Host_ip = data.Status.HostIP
 	// Test(data.Status.PodIP)
 
 	// if data.Status.PodIP != nil {
