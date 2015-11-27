@@ -32,6 +32,7 @@ func main() {
     restful.Add(ReplicationControllerRouter())
     restful.Add(PodRouter())
     restful.Add(NodeRouter())
+    restful.Add(EventRouter())
 
 
 
@@ -133,6 +134,25 @@ func NodeRouter() *restful.WebService {
 
     // listNode := controllers.PodController{}
     var listNode controllers.NodeController
+
+    // router.Route(router.GET("/{name}").To(listNode.Get))
+    router.Route(router.GET("/").To(listNode.GetList))
+    // router.Route(router.POST("/").To(listNode.Post))
+    // router.Route(router.PUT("/{name}").To(listNode.Put))
+    // router.Route(router.DELETE("/{name}").To(listNode.Delete))
+ 
+    return router
+}
+
+func EventRouter() *restful.WebService {
+    router := new(restful.WebService)
+    router.
+        Path("/event").
+        Consumes(restful.MIME_JSON, restful.MIME_JSON).
+        Produces(restful.MIME_JSON, restful.MIME_JSON)
+
+    // listNode := controllers.PodController{}
+    var listNode controllers.EventController
 
     // router.Route(router.GET("/{name}").To(listNode.Get))
     router.Route(router.GET("/").To(listNode.GetList))
