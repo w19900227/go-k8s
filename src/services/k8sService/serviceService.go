@@ -257,7 +257,7 @@ func (this *ServiceService) UpdateService(name string, data []byte) Service {
 	_k8s_service.Metadata.Labels = _service_format.Label
 	_k8s_service.Spec.Ports[0].Port, _ = strconv.Atoi(_service_format.Port)
 	_k8s_service.Spec.Ports[0].TargetPort, _ = strconv.Atoi(_service_format.Port)
-	_k8s_service.Spec.Selector["name"] = name
+	// _k8s_service.Spec.Selector["name"] = name
 	
     service_model.UpdateService(name, _k8s_service)
 	_service.Status = "ok"
@@ -393,6 +393,67 @@ func (this *ServiceService) CreateBoth(data []byte) Service {
 	service.Status = "ok"
 	// service.Data = ""
 	return service
+}
+
+func (this *ServiceService) CreateServiceRouting(data []byte) Service {
+	type service_format struct {
+		Service_name string `json:"service_name"`
+		Routing_ip string `json:"routing_ip"`
+		Port string `json:"port"`
+		Label map[string]string `json:"label"`
+		NodePort string `json:"nodePort"`
+	}
+
+    var _service_format service_format
+	json.Unmarshal(data, &_service_format)
+
+	var _k8s_service k8s_format.Service
+	_k8s_service.Kind = "Service"
+	_k8s_service.Metadata.Name = _service_format.Service_name
+	_k8s_service.Metadata.Labels = _service_format.Label
+	_k8s_service.Metadata.Labels["name"] = _service_format.Service_name
+
+	var _k8s_service_ports k8s_format.ServicePort
+	_k8s_service_ports.Port, _ = strconv.Atoi(_service_format.Port)
+	_k8s_service_ports.TargetPort, _ = strconv.Atoi(_service_format.Port)
+	_k8s_service_ports.Protocol = "TCP"
+	_k8s_service.Spec.Ports = append(_k8s_service.Spec.Ports, _k8s_service_ports)
+	_k8s_service.Spec.Type = "NodePort"
+	service_model := k8sModel.ServiceModel{}
+    // rep := service_model.CreateService(_k8s_service)
+    service_model.CreateService(_k8s_service)
+
+
+	var _k8s_endpoint k8s_format.Endpoints
+	_k8s_endpoint.Kind = "Endpoints"
+	_k8s_endpoint.Metadata.Name = _service_format.Service_name
+	_k8s_endpoint.Metadata.Labels = _service_format.Label
+	_k8s_endpoint.Metadata.Labels["name"] = _service_format.Service_name
+
+	var _k8s_endpoint_address k8s_format.EndpointAddress
+	_k8s_endpoint_address.IP = _service_format.Routing_ip
+
+	var _k8s_endpoint_port k8s_format.EndpointPort
+	_k8s_endpoint_port.Port, _ = strconv.Atoi(_service_format.Port)
+	_k8s_endpoint_port.Protocol = "TCP"
+
+	var _k8s_endpoint_subset k8s_format.EndpointSubset
+	_k8s_endpoint_subset.Addresses = append(_k8s_endpoint_subset.Addresses, _k8s_endpoint_address)
+	_k8s_endpoint_subset.Ports = append(_k8s_endpoint_subset.Ports, _k8s_endpoint_port)
+
+	_k8s_endpoint.Subsets = append(_k8s_endpoint.Subsets, _k8s_endpoint_subset)
+
+	var endpoint_model k8sModel.EndpointModel
+	endpoint_model.CreateEndpoint(_k8s_endpoint)
+
+    var _service Service
+    // if rep == nil {
+    // 	_service.Status = "fail"
+    // 	return _service
+    // }
+
+	_service.Status = "ok"
+	return _service
 }
 
 func Test(result interface{}) {

@@ -89,6 +89,21 @@ func (this *ServiceController) CreateBoth(request *restful.Request, response *re
     return
 }
 
+func (this *ServiceController) CreateServiceRouting(request *restful.Request, response *restful.Response) {
+    fmt.Println("[Post] Service Routing")
+
+    body, err := ioutil.ReadAll(request.Request.Body)
+
+    if err != nil {
+        response.WriteEntity("fail")
+        return
+    }
+
+    var list_service k8sService.ServiceService
+    response.WriteEntity(list_service.CreateServiceRouting(body))
+    return
+}
+
 
 func Test(result interface{}) {
     js, _ := json.Marshal(result)
