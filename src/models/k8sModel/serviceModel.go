@@ -10,7 +10,7 @@ import (
 	// "k8s.io/kubernetes/pkg/api"
 )
 import (
-	"fmt"
+	// "fmt"
 )
 
 type ServiceModel struct {
@@ -28,7 +28,8 @@ type ServiceModel struct {
 // curl -H "Content-Type: application/json" -X GET  http://192.168.12.8:8080/api/v1/namespaces/default/services
 // func (this *ServiceModel) GetServiceList() (api.ServiceList) {
 func (this *ServiceModel) GetServiceList() (format.ServiceList) {
-	body := this.req.Get("http://192.168.12.8:8080/api/v1/namespaces/default/services")
+	url := this.GetK8SUrl("services", bm.Namespace)
+	body := this.req.Get(url)
 	// body := this.getPagInfo_data()//在伺服器run必須移除此行
 
 	// var data api.ServiceList
@@ -39,7 +40,8 @@ func (this *ServiceModel) GetServiceList() (format.ServiceList) {
 	return data
 }
 func (this *ServiceModel) GetService(name string) (format.Service) {
-	body := this.req.Get("http://192.168.12.8:8080/api/v1/namespaces/default/services/"+name)
+	url := this.GetK8SUrl("services/"+name, bm.Namespace)
+	body := this.req.Get(url)
 	// body := this.getPagInfo_data()//在伺服器run必須移除此行
 
 	// var data api.ServiceList
@@ -51,7 +53,8 @@ func (this *ServiceModel) GetService(name string) (format.Service) {
 }
 
 func (this *ServiceModel) CreateService(data format.Service) (format.Service) {
-	body := this.req.Post("http://192.168.12.8:8080/api/v1/namespaces/default/services", data)
+	url := this.GetK8SUrl("services", bm.Namespace)
+	body := this.req.Post(url, data)
 	
 	var _service_data format.Service
 	json.Unmarshal(body, &_service_data)
@@ -60,7 +63,8 @@ func (this *ServiceModel) CreateService(data format.Service) (format.Service) {
 }
 
 func (this *ServiceModel) UpdateService(name string, data format.Service) (format.Service) {
-	body := this.req.Put("http://192.168.12.8:8080/api/v1/namespaces/default/services/"+name, data)
+	url := this.GetK8SUrl("services/"+name, bm.Namespace)
+	body := this.req.Put(url, data)
 	
 	var _service_data format.Service
 	json.Unmarshal(body, &_service_data)
@@ -69,7 +73,8 @@ func (this *ServiceModel) UpdateService(name string, data format.Service) (forma
 }
 
 func (this *ServiceModel) DeleteService(name string) (format.Service) {
-	body := this.req.Delete("http://192.168.12.8:8080/api/v1/namespaces/default/services/"+name, nil)
+	url := this.GetK8SUrl("services/"+name, bm.Namespace)
+	body := this.req.Delete(url, nil)
 	
 	var _service_data format.Service
 	json.Unmarshal(body, &_service_data)
@@ -77,10 +82,6 @@ func (this *ServiceModel) DeleteService(name string) (format.Service) {
 	return _service_data
 }
 
-func Test(result interface{}) {
-	js, _ := json.Marshal(result)
-	fmt.Println(string(js))
-}
 
 
 

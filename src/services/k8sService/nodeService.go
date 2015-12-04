@@ -4,7 +4,7 @@ import (
 )
 
 import (
-	"fmt"
+	// "fmt"
 	// bs "./baseService"
 	// "../models"
 	// k8s "./k8s"
@@ -36,10 +36,6 @@ type Nodes struct {
 	Data []k8s_format.Node `json:"data,omitempty"`
 }
 
-func (this *NodeService) GetTest() string {
-	fmt.Println("NodeService")
-	return "NodeService"
-}
 
 func (this *NodeService) GetPodList() Nodes {
 	var _node_list Nodes

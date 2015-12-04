@@ -1,7 +1,7 @@
 package k8sService
 
 import (
-	"fmt"
+	// "fmt"
 )
 
 import (
@@ -73,11 +73,6 @@ type ClusterList struct {
 	Errno string `json:"errno,omitempty"`
 	Errmsg string `json:"errmsg,omitempty"`
 	Data []Cluster_format `json:"data,omitempty"`
-}
-
-
-func (this *ReplicationControllerService) GetTest() string {
-	return "ReplicationControllerService"
 }
 
 func (this *ReplicationControllerService) GetReplicationControllerList() ClusterList {
@@ -258,8 +253,4 @@ func (this *ReplicationControllerService) DeleteReplicationController(rc_name st
 	_cluster.Status = "ok"
 
 	return _cluster
-}
-
-func tt() {
-	fmt.Println("ssstttt")
 }

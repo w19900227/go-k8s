@@ -4,7 +4,7 @@ import (
 )
 
 import (
-	"fmt"
+	// "fmt"
 	// bs "./baseService"
 	// "../models"
 	// k8s "./k8s"
@@ -64,11 +64,6 @@ type PodList struct {
 	Errno string `json:"errno,omitempty"`
 	Errmsg string `json:"errmsg,omitempty"`
 	Data []Pod_format `json:"data,omitempty"`
-}
-
-func (this *PodService) GetTest() string {
-	fmt.Println("PodService")
-	return "PodService"
 }
 
 func (this *PodService) GetPodList() PodList {

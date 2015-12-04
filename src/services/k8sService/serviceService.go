@@ -4,7 +4,7 @@ import (
     // "github.com/emicklei/go-restful"
 
 // // 	"net/http"
-	"fmt"
+	// "fmt"
 	"encoding/json"
 // 	"strconv"
 	// "io/ioutil"
@@ -454,17 +454,6 @@ func (this *ServiceService) CreateServiceRouting(data []byte) Service {
 
 	_service.Status = "ok"
 	return _service
-}
-
-func Test(result interface{}) {
-	js, _ := json.Marshal(result)
-	fmt.Println(string(js))
-}
-
-	
-
-func (this *ServiceService) GetCluster() string {
-	return this.GetBaseUrl()
 }
 
 // func (this *ServiceService) GetContainer() string {

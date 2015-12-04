@@ -1,8 +1,8 @@
 package services
 
 import (
-	"fmt"
-	"encoding/json"
+	// "fmt"
+	// "encoding/json"
 
 // 	"runtime"
 // 	"time"
@@ -240,15 +240,4 @@ func (this *OverviewService) GetMachineInfo() OverviewList {
 	return _overview_list
 }
 
-
-func Test(result interface{}) {
-	js, _ := json.Marshal(result)
-	fmt.Println(string(js))
-}
-
-func (this *OverviewService) AABB() string {
-	fmt.Println("ssswww")
-	// return "sssss"
-	return this.GetBaseUrl()
-}
 

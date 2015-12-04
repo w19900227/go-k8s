@@ -11,15 +11,22 @@ import (
 	// "encoding/json"
 )
 
+const (
+	k8s_path = "http://192.168.12.8:8080"
+	// k8s_path = "http://master:8080"
+	herd_path = "http://192.168.12.7:8090"
+	// herd_path = "http://herd:8090"
+)
+
+var (
+	Namespace = "default"
+)	
+
 type BaseModel struct {
 	baseurl string 
 	namespace string 
 	hred_ip string 
 }
-// const (
-// 	baseUrl string = ""
-// 	herdUrl string = ""
-// )
 
 // func (this *BaseService) init() {
 
@@ -28,13 +35,17 @@ type BaseModel struct {
 	// this.hred_ip = "http://192.168.6.14:8090"
 // }
 
-func (this *BaseModel) GetBaseUrl(uri string) string {
-	return "http://192.168.15.77:8080/api/v1" + "/namespaces/default/" + uri
+func (this *BaseModel) GetK8SUrl(uri string, namespace string) string {
+	if namespace != "" {
+		return k8s_path + "/api/v1" + "/namespaces/" + namespace + "/" + uri
+	}
+	return k8s_path + "/api/v1/" + uri
 }
 
-func (this *BaseModel) GetHredIP(uri string) string {
-	return "http://192.168.15.76:8090/" + uri
+func (this *BaseModel) GetHerdUrl(uri string) string {
+	return herd_path + "/" + uri
 }
+
 func (this *BaseModel) GetRequest(url string) []byte {
     res, err := http.Get(url)
     if err != nil {
@@ -48,12 +59,6 @@ func (this *BaseModel) GetRequest(url string) []byte {
     }
 
     return body
-    // return body
-
-    // body = []byte(`{"status": "ok","data": [{"official": [{"ch_id": "57","ch_name": "UDN直播新聞台","ch_description": "","owner_id": "14","owner_name": "Ayukawa","owner_photo": "38/bc/14.jpg?1415009271","ch_number": "10","ch_type": "2","ch_rating_system": "0","ch_views": "10360","ch_likes": "0","ch_subscribes": "211","ch_has_cover": "1","ch_cover_hash": "1415107242"},{"ch_id": "1698","ch_name": "大愛一臺HD Live 直播","ch_description": "","owner_id": "618","owner_name": "Kelly","owner_photo": "c3/81/618.jpg?1423460588","ch_number": "11","ch_type": "2","ch_rating_system": "0","ch_views": "5639","ch_likes": "0","ch_subscribes": "72","ch_has_cover": "1","ch_cover_hash": "1431919773"}],"create": [ ],"subscribe": [ ]}]}`)
-    // fmt.Println(body)
-    // var data list_self
-	// json.Unmarshal(body, &data)
 }
 
 
