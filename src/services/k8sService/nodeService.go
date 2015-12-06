@@ -30,10 +30,10 @@ type NodeService struct {
 
 
 type Nodes struct {
-	Status string `json:"status,omitempty"`
-	Errno string `json:"errno,omitempty"`
-	Errmsg string `json:"errmsg,omitempty"`
-	Data []k8s_format.Node `json:"data,omitempty"`
+	Status string `json:"status,inline"`
+	Errno string `json:"errno,inline"`
+	Errmsg string `json:"errmsg,inline"`
+	Data []k8s_format.Node `json:"data,inline"`
 }
 
 

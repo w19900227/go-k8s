@@ -60,21 +60,21 @@ type Service_format struct {
 	Label map[string]string `json:"label,omitempty"`
 	Ports []sub_Ports `json:"ports,omitempty"`
 	Status string `json:"status,omitempty"`
-	Cpu int `json:"cpu"`
-	Mem int `json:"mem"`
+	Cpu string `json:"cpu,omitempty"`
+	Mem string `json:"mem,omitempty"`
 	Service_name string `json:"service_name,omitempty"`
 }
 type Service struct {
-	Status string `json:"status,omitempty"`
-	Errno string `json:"errno,omitempty"`
-	Errmsg string `json:"errmsg,omitempty"`
-	Data Service_format `json:"data,omitempty"`
+	Status string `json:"status,inline"`
+	Errno string `json:"errno,inline"`
+	Errmsg string `json:"errmsg,inline"`
+	Data Service_format `json:"data,inline"`
 }	
 type ServiceList struct {
-	Status string `json:"status,omitempty"`
-	Errno string `json:"errno,omitempty"`
-	Errmsg string `json:"errmsg,omitempty"`
-	Data []Service_format `json:"data,omitempty"`
+	Status string `json:"status,inline"`
+	Errno string `json:"errno,inline"`
+	Errmsg string `json:"errmsg,inline"`
+	Data []Service_format `json:"data,inline"`
 }
 // func (this *ServiceService) Service_bak() types.ServiceList {
 //     service_model := k8sModel.ServiceModel{}
@@ -323,15 +323,15 @@ func (this *ServiceService) ServiceByName(name string, data k8s_format.Service) 
 	}
 
 	if len(data.Spec.Selector) < 1 {
-		_service.Status = "Forward"
-		_service.Cpu = 0
-		_service.Mem = 0
+		// _service.Status = "Forward"
+		// _service.Cpu = "0"
+		// _service.Mem = "0"
 	} else {
 		cpu := strconv.Itoa(len(cpuAndMem.Cpu))
 		mem := strconv.Itoa(len(cpuAndMem.Mem))
 		_service.Status = cpu+"/"+mem
-		_service.Cpu = len(cpuAndMem.Cpu)
-		_service.Mem = len(cpuAndMem.Mem)
+		_service.Cpu = strconv.Itoa(len(cpuAndMem.Cpu))
+		_service.Mem = strconv.Itoa(len(cpuAndMem.Mem))
 	}
 		
     return _service
@@ -456,6 +456,63 @@ func (this *ServiceService) CreateServiceRouting(data []byte) Service {
 	return _service
 }
 
+
+func (this *ServiceService) UpdateServiceRouting(data []byte) Service {
+	type service_format struct {
+		// Service_name string `json:"service_name"`
+		Routing_ip string `json:"routing_ip"`
+		Port string `json:"port"`
+		Label map[string]string `json:"label"`
+		NodePort string `json:"nodePort"`
+	}
+
+    var _service_format service_format
+	json.Unmarshal(data, &_service_format)
+
+	var _k8s_service k8s_format.Service
+	_k8s_service.Kind = "Service"
+	_k8s_service.Metadata.Labels = _service_format.Label
+
+	var _k8s_service_ports k8s_format.ServicePort
+	_k8s_service_ports.Port, _ = strconv.Atoi(_service_format.Port)
+	_k8s_service_ports.TargetPort, _ = strconv.Atoi(_service_format.Port)
+	_k8s_service_ports.Protocol = "TCP"
+	_k8s_service.Spec.Ports = append(_k8s_service.Spec.Ports, _k8s_service_ports)
+	_k8s_service.Spec.Type = "NodePort"
+	service_model := k8sModel.ServiceModel{}
+    // rep := service_model.CreateService(_k8s_service)
+    service_model.CreateService(_k8s_service)
+
+
+	var _k8s_endpoint k8s_format.Endpoints
+	_k8s_endpoint.Kind = "Endpoints"
+	_k8s_endpoint.Metadata.Labels = _service_format.Label
+
+	var _k8s_endpoint_address k8s_format.EndpointAddress
+	_k8s_endpoint_address.IP = _service_format.Routing_ip
+
+	var _k8s_endpoint_port k8s_format.EndpointPort
+	_k8s_endpoint_port.Port, _ = strconv.Atoi(_service_format.Port)
+	_k8s_endpoint_port.Protocol = "TCP"
+
+	var _k8s_endpoint_subset k8s_format.EndpointSubset
+	_k8s_endpoint_subset.Addresses = append(_k8s_endpoint_subset.Addresses, _k8s_endpoint_address)
+	_k8s_endpoint_subset.Ports = append(_k8s_endpoint_subset.Ports, _k8s_endpoint_port)
+
+	_k8s_endpoint.Subsets = append(_k8s_endpoint.Subsets, _k8s_endpoint_subset)
+
+	var endpoint_model k8sModel.EndpointModel
+	endpoint_model.CreateEndpoint(_k8s_endpoint)
+
+    var _service Service
+    // if rep == nil {
+    // 	_service.Status = "fail"
+    // 	return _service
+    // }
+
+	_service.Status = "ok"
+	return _service
+}
 // func (this *ServiceService) GetContainer() string {
 // 	return this.GetBaseUrl()
 // }

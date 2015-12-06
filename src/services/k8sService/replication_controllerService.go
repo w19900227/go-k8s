@@ -62,17 +62,17 @@ type Cluster_format struct {
 }
 
 type Cluster struct {
-	Status string `json:"status,omitempty"`
-	Errno string `json:"errno,omitempty"`
-	Errmsg string `json:"errmsg,omitempty"`
-	Data Cluster_format `json:"data,omitempty"`
+	Status string `json:"status,inline"`
+	Errno string `json:"errno,inline"`
+	Errmsg string `json:"errmsg,inline"`
+	Data Cluster_format `json:"data,inline"`
 }
 	
 type ClusterList struct {
-	Status string `json:"status,omitempty"`
-	Errno string `json:"errno,omitempty"`
-	Errmsg string `json:"errmsg,omitempty"`
-	Data []Cluster_format `json:"data,omitempty"`
+	Status string `json:"status,inline"`
+	Errno string `json:"errno,inline"`
+	Errmsg string `json:"errmsg,inline"`
+	Data []Cluster_format `json:"data,inline"`
 }
 
 func (this *ReplicationControllerService) GetReplicationControllerList() ClusterList {

@@ -53,17 +53,17 @@ type Pod_format struct {
 	Label map[string]string `json:"label,omitempty"`
 }
 type Pod struct {
-	Status string `json:"status,omitempty"`
-	Errno string `json:"errno,omitempty"`
-	Errmsg string `json:"errmsg,omitempty"`
-	Data Pod_format `json:"data,omitempty"`
+	Status string `json:"status,inline"`
+	Errno string `json:"errno,inline"`
+	Errmsg string `json:"errmsg,inline"`
+	Data Pod_format `json:"data,inline"`
 }
 
 type PodList struct {
-	Status string `json:"status,omitempty"`
-	Errno string `json:"errno,omitempty"`
-	Errmsg string `json:"errmsg,omitempty"`
-	Data []Pod_format `json:"data,omitempty"`
+	Status string `json:"status,inline"`
+	Errno string `json:"errno,inline"`
+	Errmsg string `json:"errmsg,inline"`
+	Data []Pod_format `json:"data,inline"`
 }
 
 func (this *PodService) GetPodList() PodList {

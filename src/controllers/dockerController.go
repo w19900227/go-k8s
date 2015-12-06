@@ -26,10 +26,10 @@ func (this *DockerController) SearchImages(request *restful.Request, response *r
     }    
 
     var images struct {
-        Status string `json:"status"`
-        Errno string `json:"errno"`
-        Errmsg string `json:"errmsg"`
-        Data interface{} `json:"data"`
+        Status string `json:"status,inline"`
+        Errno string `json:"errno,inline"`
+        Errmsg string `json:"errmsg,inline"`
+        Data interface{} `json:"data,inline"`
     }
 
     var docker services.DockerService

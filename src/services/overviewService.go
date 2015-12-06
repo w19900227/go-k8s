@@ -49,10 +49,10 @@ type Overview struct {
 	Machine_info []machine_info `json:"machine_info,omitempty"`
 }
 type OverviewList struct {
-	Status string `json:"status,omitempty"`
-	Errno string `json:"errno,omitempty"`
-	Errmsg string `json:"errmsg,omitempty"`
-	Data Overview `json:"data,omitempty"`
+	Status string `json:"status,inline"`
+	Errno string `json:"errno,inline"`
+	Errmsg string `json:"errmsg,inline"`
+	Data Overview `json:"data,inline"`
 }
 
 func (this *OverviewService) GetAllCount() OverviewList {

@@ -42,10 +42,10 @@ type data struct {
 	Pods []k8sService.Pod_format `json:"containers,omitempty"`
 }
 type bubble struct {
-	Status string `json:"status,omitempty"`
-	Errno string `json:"errno,omitempty"`
-	Errmsg string `json:"errmsg,omitempty"`
-	Data data `json:"data,omitempty"`
+	Status string `json:"status,inline"`
+	Errno string `json:"errno,inline"`
+	Errmsg string `json:"errmsg,inline"`
+	Data data `json:"data,inline"`
 }
 
 
