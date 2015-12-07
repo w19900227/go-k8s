@@ -41,7 +41,9 @@ func (this *GetHerdModel) PostData(d format.Data) (format.HerdGet) {
 	// fmt.Println(string(body))
 	// fmt.Println(this.Data)
 	// body := this.req.Post("http://192.168.12.7:8090/get", this.Data)
-	body := this.req.Post("http://192.168.12.7:8090/get", d)
+	url := this.GetHerdUrl("get")
+	body := this.req.Post(url, d)
+
 	// body := this.getPagInfo_data()
 	// fmt.Println(string(data))
 

@@ -156,6 +156,8 @@ func (this *Routes) DockerRouter() *restful.WebService {
     
     var listDocker controllers.DockerController
     router.Route(router.POST("/search").To(listDocker.SearchImages))
+    router.Route(router.GET("/images").To(listDocker.Images))
+
  
     return router
 }

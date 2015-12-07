@@ -25,8 +25,8 @@ func (this *ScaleHerdModel) Test() string {
 // curl -H "Content-Type: application/json" -X POST -d '{"clusters":["app","dev","redis-master","redis-slave","web-app"]}' http://192.168.12.7:8090/getscale
 func (this *ScaleHerdModel) GetScale(d format.Data) (format.HerdGetScale) {
 	// url := this.GetBaseUrl("services")
-
-	body := this.req.Post("http://192.168.12.7:8090/getscale", d)
+	url := this.GetHerdUrl("getscale")
+	body := this.req.Post(url, d)
 	// body := this.GetRequest(url)
 	// body := this.getPagInfo_data()//在伺服器run必須移除此行
 
