@@ -35,7 +35,7 @@ func main() {
     // Add container filter to enable CORS
     cors := restful.CrossOriginResourceSharing{
         ExposeHeaders:  []string{"X-My-Header"},
-        AllowedHeaders: []string{"Content-Type", "Accept"},
+        AllowedHeaders: []string{"Content-Type", "Accept", "token"},
         CookiesAllowed: false,
         Container:      wsContainer}
     wsContainer.Filter(cors.Filter)
@@ -46,7 +46,7 @@ func main() {
     // var filter filter.Filter
     // wsContainer.Filter(filter.AuthToken)
 	
-    server := &http.Server{Addr:":31001", Handler: wsContainer}
+    server := &http.Server{Addr:":8802", Handler: wsContainer}
     log.Fatal(server.ListenAndServe())
     // log.Fatal(http.ListenAndServe(":31001", nil))
 }

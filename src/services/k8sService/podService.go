@@ -133,9 +133,14 @@ func (this *PodService) PodByName(name string, data k8s_format.Pod) Pod_format {
 
 	var getHerd herdModel.GetHerdModel
 	getHerd_data := getHerd.PostData(herd_service)
-	_herd_container := getHerd_data.Containers[0]
-	_pod.Cpu = _herd_container.Cpu
-	_pod.Mem = _herd_container.Mem
+	if len(getHerd_data.Containers) > 0 {
+		_herd_container := getHerd_data.Containers[0]
+		_pod.Cpu = _herd_container.Cpu
+		_pod.Mem = _herd_container.Mem
+	} else {
+		_pod.Cpu = 0
+		_pod.Mem = 0
+	}
 
 	_pod.Ports.Phase = data.Status.Phase
 	_pod.Ports.Public_ip = data.Status.PodIP
